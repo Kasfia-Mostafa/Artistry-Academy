@@ -78,6 +78,7 @@ const changeStatus = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 export const UserControllers = {
   createStudent,
   createFaculty,
