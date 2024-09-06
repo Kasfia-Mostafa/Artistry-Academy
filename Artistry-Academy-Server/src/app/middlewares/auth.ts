@@ -10,21 +10,26 @@ import catchAsync from '../utils/catchAsync';
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const authHeader = req.headers.authorization;
-
+      const token = req.headers.authorization;
+      // console.log(token);
       // Validate token presence and format
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        throw new AppError(httpStatus.UNAUTHORIZED, 'No token provided or wrong format!');
+      if (!token) {
+        throw new AppError(
+          httpStatus.UNAUTHORIZED,
+          'No token provided or wrong format!',
+        );
       }
 
-      const token = authHeader.split(' ')[1];
-
-      // Verify the token
-      const decoded = jwt.verify(
-        token,
-        config.jwt_access_secret as string
-      ) as JwtPayload;
-
+      let decoded;
+      try {
+        decoded = jwt.verify(
+          token,
+          config.jwt_access_secret as string,
+        ) as JwtPayload;
+      } catch (error) {
+        throw new AppError(httpStatus.UNAUTHORIZED, 'Unauthorize');
+      }
+      // console.log(decoded);
       const { role, userId, iat } = decoded;
 
       // Check if user exists
@@ -44,14 +49,23 @@ const auth = (...requiredRoles: TUserRole[]) => {
       // Check if password was changed after token issuance
       if (
         user.passwordChangedAt &&
-        User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
+        User.isJWTIssuedBeforePasswordChanged(
+          user.passwordChangedAt,
+          iat as number,
+        )
       ) {
-        throw new AppError(httpStatus.UNAUTHORIZED, 'Token is invalid after password change!');
+        throw new AppError(
+          httpStatus.UNAUTHORIZED,
+          'Token is invalid after password change!',
+        );
       }
 
       // Check for role authorization
       if (requiredRoles.length && !requiredRoles.includes(role)) {
-        throw new AppError(httpStatus.FORBIDDEN, 'You do not have the required role!');
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          'You do not have the required role!',
+        );
       }
 
       req.user = decoded as JwtPayload & { role: string };
@@ -62,14 +76,14 @@ const auth = (...requiredRoles: TUserRole[]) => {
           success: false,
           message: 'Invalid token',
           errorSources: [{ path: '', message: 'Invalid token' }],
-          err: { statusCode: httpStatus.UNAUTHORIZED }
+          err: { statusCode: httpStatus.UNAUTHORIZED },
         });
       } else if (err instanceof jwt.TokenExpiredError) {
         return res.status(httpStatus.UNAUTHORIZED).json({
           success: false,
           message: 'Token expired',
           errorSources: [{ path: '', message: 'Token expired' }],
-          err: { statusCode: httpStatus.UNAUTHORIZED }
+          err: { statusCode: httpStatus.UNAUTHORIZED },
         });
       }
 
@@ -77,7 +91,5 @@ const auth = (...requiredRoles: TUserRole[]) => {
     }
   });
 };
-
-
 
 export default auth;
