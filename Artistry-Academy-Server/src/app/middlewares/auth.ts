@@ -10,7 +10,7 @@ import catchAsync from '../utils/catchAsync';
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization
+      const token = req.headers.authorization;
       // console.log(token);
       // Validate token presence and format
       if (!token) {
