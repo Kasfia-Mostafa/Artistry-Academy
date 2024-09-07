@@ -1,13 +1,15 @@
-import AcademicDepartment from "../pages/Admin/AcademicManagment/AcademicDepartment";
-import AcademicFaculty from "../pages/Admin/AcademicManagment/AcademicFaculty";
-import AcademicSemester from "../pages/Admin/AcademicManagment/AcademicSemester";
-import CreateAcademicDepartment from "../pages/Admin/AcademicManagment/CreateAcademicDepartment";
-import CreateAcademicFaculty from "../pages/Admin/AcademicManagment/CreateAcademicFaculty";
-import CreateAcademicSemester from "../pages/Admin/AcademicManagment/CreateAcademicSemester";
+import AcademicDepartment from "../pages/Admin/AcademicManagement/AcademicDepartment";
+import AcademicFaculty from "../pages/Admin/AcademicManagement/AcademicFaculty";
+import AcademicSemester from "../pages/Admin/AcademicManagement/AcademicSemester";
+import CreateAcademicDepartment from "../pages/Admin/AcademicManagement/CreateAcademicDepartment";
+import CreateAcademicFaculty from "../pages/Admin/AcademicManagement/CreateAcademicFaculty";
+import CreateAcademicSemester from "../pages/Admin/AcademicManagement/CreateAcademicSemester";
+import CreateAdmin from "../pages/Admin/AcademicManagement/UserManagement/CreateAdmin";
+import CreateFaculty from "../pages/Admin/AcademicManagement/UserManagement/CreateFaculty";
+import CreateStudent from "../pages/Admin/AcademicManagement/UserManagement/CreateStudent";
+import StudentData from "../pages/Admin/AcademicManagement/UserManagement/StudentData";
+import StudentDetails from "../pages/Admin/AcademicManagement/UserManagement/StudentDetails";
 import AdminDashboard from "../pages/Admin/AdminDashboard";
-import CreateAdmin from "../pages/Admin/CreateAdmin";
-import CreateFaculty from "../pages/Admin/CreateFaculty";
-import CreateStudent from "../pages/Admin/CreateStudent";
 
 export const adminPaths = [
   {
@@ -54,9 +56,19 @@ export const adminPaths = [
     name: "User Management",
     children: [
       {
-        name: "Create Admin",
-        path: "create-admin",
-        element: <CreateAdmin />,
+        name: "Students",
+        path: "students-data",
+        element: <StudentData />,
+      },
+      {
+        name: "Student Details",
+        path: "students-data/:studentId",
+        element: <StudentDetails />,
+      },
+      {
+        name: "Create Student",
+        path: "create-student",
+        element: <CreateStudent />,
       },
       {
         name: "Create Faculty",
@@ -64,9 +76,9 @@ export const adminPaths = [
         element: <CreateFaculty />,
       },
       {
-        name: "Create Student",
-        path: "create-student",
-        element: <CreateStudent />,
+        name: "Create Admin",
+        path: "create-admin",
+        element: <CreateAdmin />,
       },
     ],
   },
