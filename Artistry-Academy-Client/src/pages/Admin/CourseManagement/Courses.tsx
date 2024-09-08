@@ -1,0 +1,95 @@
+import { Button, Modal, Table } from "antd";
+import { useState } from "react";
+import FormComponent from "../../../components/form/FormComponent";
+import FormSelect from "../../../components/form/FormSelect";
+import { useAddFacultiesMutation, useGetAllCoursesQuery } from "../../../redux/features/admin/courseManagementApi";
+import { useGetAllFacultiesQuery } from "../../../redux/features/admin/userManagementAPi";
+
+const Courses = () => {
+
+  const { data: courses, isFetching } = useGetAllCoursesQuery(undefined);
+
+  const tableData = courses?.data?.map(({ _id, title, prefix, code }:any) => ({
+    key: _id,
+    title,
+    code: `${prefix} ${code}`,
+  }));
+
+  const columns = [
+    {
+      title: "Title",
+      key: "title",
+      dataIndex: "title",
+    },
+    {
+      title: "Code",
+      key: "code",
+      dataIndex: "code",
+    },
+    {
+      title: "Action",
+      key: "x",
+      render: (item:any) => {
+        return <AddFacultyModal facultyInfo={item} />;
+      },
+    },
+  ];
+
+  return (
+    <Table loading={isFetching} columns={columns} dataSource={tableData} />
+  );
+};
+
+const AddFacultyModal = ({ facultyInfo }:any) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: facultiesData } = useGetAllFacultiesQuery(undefined);
+  const [addFaculties] = useAddFacultiesMutation();
+
+  const facultiesOption = facultiesData?.data?.map((item:any) => ({
+    value: item._id,
+    label: item.fullName,
+  }));
+
+  const handleSubmit = (data:any) => {
+    const facultyData = {
+      courseId: facultyInfo.key,
+      data,
+    };
+
+    console.log(facultyData);
+
+    addFaculties(facultyData);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  return (
+    <>
+      <Button onClick={showModal}>Add Faculty</Button>
+      <Modal
+        title="Basic Modal"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <FormComponent onSubmit={handleSubmit}>
+          <FormSelect
+            mode="multiple"
+            options={facultiesOption}
+            name="faculties"
+            label="Faculty"
+          />
+          <Button htmlType="submit">Submit</Button>
+        </FormComponent>
+      </Modal>
+    </>
+  );
+};
+
+export default Courses;

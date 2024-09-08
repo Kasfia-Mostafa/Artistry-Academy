@@ -1,4 +1,5 @@
 import { Form, Select } from "antd";
+import { useEffect } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 
 type TSelectProps = {
@@ -7,14 +8,26 @@ type TSelectProps = {
   options: { value: string; label: string; disabled?: boolean }[] | undefined;
   disabled?: boolean;
   mode?: "multiple" | undefined;
+  onValueChange: React.Dispatch<React.SetStateAction<string>>;
 };
 
-const FormSelect = ({ label, name, options, disabled, mode }: TSelectProps) => {
-  const { control } = useFormContext();
+const FormSelectWithWatch = ({
+  label,
+  name,
+  options,
+  disabled,
+  mode,
+  onValueChange,
+}: TSelectProps) => {
+  const method = useFormContext();
   const inputValue = useWatch({
-    control,
+    control: method.control,
     name,
   });
+
+  useEffect(() => {
+    onValueChange(inputValue);
+  }, [inputValue]);
 
   return (
     <Controller
@@ -25,8 +38,8 @@ const FormSelect = ({ label, name, options, disabled, mode }: TSelectProps) => {
             mode={mode}
             style={{ width: "100%" }}
             {...field}
-            size="large"
             options={options}
+            size="large"
             disabled={disabled}
           />
           {error && <small style={{ color: "red" }}>{error.message}</small>}
@@ -36,4 +49,4 @@ const FormSelect = ({ label, name, options, disabled, mode }: TSelectProps) => {
   );
 };
 
-export default FormSelect;
+export default FormSelectWithWatch;
