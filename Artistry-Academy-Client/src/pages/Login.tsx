@@ -12,16 +12,10 @@ import FormInput from "../components/form/FormInput";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  // const { register } = useForm({
-  //   defaultValues: {
-  //     userId: "A-0002",
-  //     password: "artistryacademy",
-  //   },
-  // });
 
   const defaultValues = {
-    userId: "A-0002",
-    password: "artistryacademy",
+    userId: "2026030003",
+    password: "student123",
   };
   const [login] = useLoginMutation();
 
@@ -34,10 +28,16 @@ const Login = () => {
         password: data.password,
       };
       const res = await login(userInfo).unwrap();
+
       const user = verifyToken(res.data.accessToken) as TUser;
       dispatch(setUser({ user: user, token: res.data.accessToken }));
       toast.success("Logged in", { id: toastId, duration: 2000 });
-      navigate(`/${user.role}/dashboard`);
+
+      if (res.data.needsPasswordChange) {
+        navigate(`/change-password`);
+      } else {
+        navigate(`/${user.role}/dashboard`);
+      }
     } catch (error) {
       toast.error("Something went wrong", { id: toastId, duration: 2000 });
     }
